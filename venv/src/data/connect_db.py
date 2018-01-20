@@ -1,6 +1,10 @@
+#!/usr/bin/env python3
+
+import importlib.util as util
 import pymysql.cursors as mysql
 import pymysql
-from print_error import print_error
+import os, sys
+import importlib
 
 def connect_db(user, passwd, db):
     connection = None
@@ -12,3 +16,9 @@ def connect_db(user, passwd, db):
         print_error(err,"connect_db")
     return connection
 
+def print_error_import():
+    print_error_mod = util.spec_from_file_location("print_error","/home/ritik/WORKSPACE/projects/reverse-dictionary/venv/src/data/print_error.py")
+    print_error = util.module_from_spec(print_error_mod)
+    print_error_mod.loader.exec_module(print_error)
+    print_error = print_error.print_error
+    return print_error
