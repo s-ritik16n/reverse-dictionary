@@ -1,4 +1,4 @@
-#!/home/ritik/WORKSPACE/projects/reverse-dictionary/venv/bin/python
+#!/home/ritik16n/WORKSPACE/projects/reverse-dictionary/venv/bin/python
 
 import sys
 import getopt

@@ -6,6 +6,8 @@ import pymysql
 import os, sys
 import importlib
 
+from print_error import print_error
+
 def connect_db(user, passwd, db):
     connection = None
     try:
@@ -17,8 +19,10 @@ def connect_db(user, passwd, db):
     return connection
 
 def print_error_import():
-    print_error_mod = util.spec_from_file_location("print_error","/home/ritik/WORKSPACE/projects/reverse-dictionary/venv/src/data/print_error.py")
-    print_error = util.module_from_spec(print_error_mod)
-    print_error_mod.loader.exec_module(print_error)
-    print_error = print_error.print_error
-    return print_error
+	import print_error
+	return print_error.print_error
+    #print_error_mod = util.spec_from_file_location("print_error",".print_error.py")
+    #print_error = util.module_from_spec(print_error_mod)
+    #print_error_mod.loader.exec_module(print_error)
+    #print_error = print_error.print_error
+    #return print_error
