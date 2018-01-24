@@ -1,34 +1,37 @@
-#import importlib.util as util
-
 import config
+from print_error import print_error
+from nltk.corpus import words, stopwords
+import MySQLdb as mysqldb
 dbinfo = config.db_info
 
-from connect_db import connect_db as cb
-from print_error import print_error
-from nltk.corpus import words
+def wordsdb(conn):
+	total = 0
+	exclude_words = [w.lower() for w in stopwords.words('english')]
+	try:
+		cursor = conn.cursor()
+		for word in words.words():
+			if word.lower() not in exclude_words:
+				sql = """INSERT INTO words (word) VALUES ('{0}')""".format(word.lower())
+				cursor.execute(sql)
+				total += 1
+				print("rows inserted: {}".format(total))
+				conn.commit()
+		cursor.close()
+		conn.commit()
+		conn.close()
+	except mysqldb.Error as e:
+		print_error(e.args[1],"wordsdb")
+		cursor = conn.cursor()
+		sql = "DELETE FROM words"
+		cursor.execute(sql)
+		cursor.close()
+		conn.commit()
+		conn.close()
+		print("data wiped")
 
-def wordsdb(connection):
-    total = 0
-    try:
-        for index,word in enumerate(words.words()):
-            with connection.cursor() as cursor:
-                sql = "INSERT INTO `words` (`word`) VALUES (%s)"
-                cursor.execute(sql, (word))
-                connection.commit()
-            total += 1
-            print("rows inserted: ",total)
-    except Exception as err:
-        print_error(err,"wordsdb")
-        with connection.cursor() as cursor:
-            sql = "DELETE FROM `words`"
-            cursor.execute(sql)
-            connection.commit()
-            print("data wiped")
 
-
-connection = cb(dbinfo["user"], dbinfo["passwd"],"wordnetdb")
+connection = mysqldb.connect(host = "localhost", user = dbinfo["user"], passwd = dbinfo["passwd"], db = "wordnetdb")
 if connection is not None:
 	wordsdb(connection)
-	pass
 else:
     print("Connection Error")
