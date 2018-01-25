@@ -1,17 +1,16 @@
 import pandas as pd
 
-from sqlalchemy import TEXT, create_engine, MetaData
+from sqlalchemy import TEXT
 from nltk.corpus import words
 from nltk.corpus import stopwords
-from nltk.stem import SnowballStemmer
+from nltk.stem import LancasterStemmer
 from connect_db import connect_db as cb
+from connect_db import get_engine
 from print_error import print_error
 from config import db_info
 
-st = SnowballStemmer(language="english")
-engine = create_engine("mysql+mysqldb://root:"+'2340532'+"@localhost/wordnetdb")
-meta = MetaData(bind = engine)
-
+st = LancasterStemmer()
+engine, meta = get_engine()
 
 def stem(word):
 	return st.stem(word)
@@ -36,6 +35,7 @@ def save_data(word_list):
 	word_list.to_sql("words", engine,if_exists = 'append', index = False,dtype=TEXT)
 	print("data saved in table 'words' in  wordnetdb ...")
 	return
+
 
 def main():
 	word_list = clean_data(load_data())

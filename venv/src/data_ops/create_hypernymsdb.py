@@ -1,36 +1,39 @@
-import MySQLdb as mysql
-from print_error import print_error
-from connect_db import connect_db as cb
-from config import db_info
+import pandas as pd
+from connect_db import get_engine
 from nltk.corpus import wordnet as wn
+from sqlalchemy import TEXT
+from print_error import print_error
 
 
-def create_hypernyms(conn):
+def save_data():
+	engine, meta = get_engine()
+	hypernym_list = pd.DataFrame(index = None, columns = ['word', 'hypernym'])
+	word_list = pd.read_sql("words", engine)
+	result = word_list.itertuples()
+
+	print("word_list dataset contains {0} words".format(word_list.shape[0]))
+	sum = 0
+	index = 0
+	for r in result:
+		sum += 1
+		for word in wn.synsets(r[1]):
+			for hyper in word.hypernyms():
+				if r[1] == word.name().split('.')[0] and len(hyper.name()) > 0:
+					hypernym_list.loc[index] = [r[1], hyper.name().split('.')[0]]
+					index += 1
+	
+	print("rows matched: {0}".format(index))
+	print("traversed {0} words for hypernym dataset".format(sum))
+	
 	try:
-		cursor = conn.cursor(mysql.cursors.DictCursor)
-		cursor.execute("SELECT  word, id from words group by word, id")
-		result = cursor.fetchall()
-		print(result)
-		cursor.close()
-		conn.commit()
-		cursor = conn.cursor(mysql.cursors.DictCursor)
-		for r in result:
-			for word in wn.synsets(r["word"]):
-				for hyper in word.hypernyms():
-					if r["word"] == word.name().split('.')[0] and len(hyper.name()) > 0:
-						cursor.execute("""INSERT INTO hypernyms (id, word, hypernym) VALUES ('{0}','{1}')""".format(r["id"], word.name().split('.')[0], hyper.name()))
-						conn.commit()
-		cursor.close()
-		conn.close()
-	except mysql.Error as e:
-		print_error(e.args[1], "create_hypernyms")
-		cursor = conn.cursor()
-		cursor.execute("DELETE FROM hypernyms")
-		conn.commit()
-		cursor.close()
-		conn.close()
-conn = cb(user = db_info["user"], passwd = db_info["passwd"], db = "wordnetdb")
-if conn is not None:
-	create_hypernyms(conn)
-else:
-	print_error("Connection Error", "main -- create_hypernyms") 
+		hypernym_list.to_sql("hypernyms", engine, if_exists='append', index=False, dtype=TEXT)
+	except Exception as e:
+		print_error(e,"save_data")
+	
+	print("Rows inserted in hypernym database: {0}".format(hypernym_list.shape[0]))
+	
+def main():
+	print("executing create_hypernyms.py ...")
+	save_data()
+
+main()
