@@ -14,12 +14,3 @@ def connect_db(user, passwd, db):
     except Exception as err:
         print_error(err,"connect_db")
     return connection
-
-def print_error_import():
-	import print_error
-	return print_error.print_error
-    #print_error_mod = util.spec_from_file_location("print_error",".print_error.py")
-    #print_error = util.module_from_spec(print_error_mod)
-    #print_error_mod.loader.exec_module(print_error)
-    #print_error = print_error.print_error
-    #return print_error

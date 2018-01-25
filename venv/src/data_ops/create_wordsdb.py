@@ -1,37 +1,48 @@
-import config
+import pandas as pd
+
+from sqlalchemy import TEXT, create_engine, MetaData
+from nltk.corpus import words
+from nltk.corpus import stopwords
+from nltk.stem import SnowballStemmer
+from connect_db import connect_db as cb
 from print_error import print_error
-from nltk.corpus import words, stopwords
-import MySQLdb as mysqldb
-dbinfo = config.db_info
+from config import db_info
 
-def wordsdb(conn):
-	total = 0
-	exclude_words = [w.lower() for w in stopwords.words('english')]
+st = SnowballStemmer(language="english")
+engine = create_engine("mysql+mysqldb://root:"+'2340532'+"@localhost/wordnetdb")
+meta = MetaData(bind = engine)
+
+
+def stem(word):
+	return st.stem(word)
+
+def load_data():
+	print("loading nltk words in dataframe ...")
+	return pd.DataFrame(words.words(), index = None,columns = ['word'])
+
+def clean_data(word_list):
+	print("stemming words ...")
+	word_list['word'] = word_list.applymap(stem)
+	print("removing stopwords ...")
+	word_list = word_list[~word_list['word'].isin(stopwords.words('english'))]
+	print("word list contains {0} words".format(word_list.shape[0]))
+	print("dropping duplicates ...")
+	word_list = word_list.drop_duplicates(subset='word', keep='first',inplace = False)
+	print("word list contains {0} words after removing duplicates".format(word_list.shape[0]))
+	return word_list
+
+def save_data(word_list):
+	print("inserting data ...")
+	word_list.to_sql("words", engine,if_exists = 'append', index = False,dtype=TEXT)
+	print("data saved in table 'words' in  wordnetdb ...")
+	return
+
+def main():
+	word_list = clean_data(load_data())
 	try:
-		cursor = conn.cursor()
-		for word in words.words():
-			if word.lower() not in exclude_words:
-				sql = """INSERT INTO words (word) VALUES ('{0}')""".format(word.lower())
-				cursor.execute(sql)
-				total += 1
-				print("rows inserted: {}".format(total))
-				conn.commit()
-		cursor.close()
-		conn.commit()
-		conn.close()
-	except mysqldb.Error as e:
-		print_error(e.args[1],"wordsdb")
-		cursor = conn.cursor()
-		sql = "DELETE FROM words"
-		cursor.execute(sql)
-		cursor.close()
-		conn.commit()
-		conn.close()
-		print("data wiped")
+		save_data(word_list)
+	except Exception as e:
+		print_error(e, "save_data")
+	return
 
-
-connection = mysqldb.connect(host = "localhost", user = dbinfo["user"], passwd = dbinfo["passwd"], db = "wordnetdb")
-if connection is not None:
-	wordsdb(connection)
-else:
-    print("Connection Error")
+main()
