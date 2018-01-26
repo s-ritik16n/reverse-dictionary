@@ -20,8 +20,8 @@ def load_data():
 	return pd.DataFrame(words.words(), index = None,columns = ['word'])
 
 def clean_data(word_list):
-	print("stemming words ...")
-	word_list['word'] = word_list.applymap(stem)
+	#print("stemming words ...")
+	#word_list['word'] = word_list.applymap(stem)
 	print("removing stopwords ...")
 	word_list = word_list[~word_list['word'].isin(stopwords.words('english'))]
 	print("word list contains {0} words".format(word_list.shape[0]))
