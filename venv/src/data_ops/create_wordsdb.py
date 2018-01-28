@@ -1,5 +1,4 @@
 import pandas as pd
-
 from sqlalchemy import TEXT
 from nltk.corpus import words
 from nltk.corpus import stopwords
