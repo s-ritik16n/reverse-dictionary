@@ -8,37 +8,40 @@ import sys
 engine, meta = get_engine()
 
 #all data frames
-words_df = pd.read_sql("words", engine)['word'].unique()
-hyper_df = pd.read_sql("hypernyms",engine)['word'].unique()
-hypo_df = pd.read_sql("hyponyms", engine)['word'].unique()
-syno_df = pd.read_sql("synonyms", engine)['word'].unique()
-def_df = pd.read_sql("definintons",engine)['word'].unique()
+words_df = pd.read_sql("words", engine, columns=['word'])
+hyper_df = pd.read_sql("hypernyms",engine, columns = ['word'])
+hypo_df = pd.read_sql("hyponyms", engine, columns = ['word'])
+syno_df = pd.read_sql("synonyms", engine, columns = ['word'])
+def_df = pd.read_sql("definitions",engine, columns = ['word'])
 
 def write_info(df):
-    print("*"*10)
-    print("all_words")
-    print(all_words.info())
-    #print("all_words dataset contains {0} words".foramt(df.count(axis=1)))
-    
+	print("*"*10)
+	print("all_words")
+	print(df.count())
+	print(df.info())
 
-def get_all_words():
-    # merge all dataframes
+def main():
+    # create dataframe to contain all words
     all_words_df = pd.DataFrame(columns = ['word'], index=None)
-    all_words = all_words.append(words_df, ignore_index=True)
-    all_words = all_words.append(hyper_df, ignore_index=True)
-    all_words = all_words.append(hypo_df, ignore_index=True)
-    all_words = all_words.append(syno_df, ignore_index=True)
-    
+	
+	#merge all dataframes
+    all_words_df = all_words_df.append(words_df, ignore_index=True)
+    all_words_df = all_words_df.append(hyper_df, ignore_index=True)
+    all_words_df = all_words_df.append(hypo_df, ignore_index=True)
+    all_words_df = all_words_df.append(syno_df, ignore_index=True)
+    all_words_df = all_words_df.append(def_df, ignore_index=True)
+ 
     # drop duplicates from the dataframe
-    all_words = all_words.drop_duplicates(subset=['word'], keep='first', inplace=False)
+    all_words_df = all_words_df.drop_duplicates(subset=['word'], keep='first', inplace=False)
     
     # display dataframe information
-    write_info(all_words)
+    write_info(all_words_df)
     
     #write to database
     try:
-        all_words.to_sql("all_words", engine, if_exists='append', index=False)
+        all_words_df.to_sql("all_words", engine, if_exists='replace', index=False)
     except Exception as e:
         print_error(e,"get_all_words")
-        sys.exit(1)
-        
+        sys.exit((1))
+
+main()        
