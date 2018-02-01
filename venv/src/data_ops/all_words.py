@@ -21,27 +21,26 @@ def write_info(df):
 	print(df.info())
 
 def main():
-    # create dataframe to contain all words
-    all_words_df = pd.DataFrame(columns = ['word'], index=None)
+	# create dataframe to contain all words
+	all_words_df = pd.DataFrame(columns = ['word'], index=None)
 	
 	#merge all dataframes
-    all_words_df = all_words_df.append(words_df, ignore_index=True)
-    all_words_df = all_words_df.append(hyper_df, ignore_index=True)
-    all_words_df = all_words_df.append(hypo_df, ignore_index=True)
-    all_words_df = all_words_df.append(syno_df, ignore_index=True)
-    all_words_df = all_words_df.append(def_df, ignore_index=True)
+	all_words_df = all_words_df.append(words_df, ignore_index=True)
+	all_words_df = all_words_df.append(hyper_df, ignore_index=True)
+	all_words_df = all_words_df.append(hypo_df, ignore_index=True)
+	all_words_df = all_words_df.append(syno_df, ignore_index=True)
+	all_words_df = all_words_df.append(def_df, ignore_index=True)
  
-    # drop duplicates from the dataframe
-    all_words_df = all_words_df.drop_duplicates(subset=['word'], keep='first', inplace=False)
+	# drop duplicates from the dataframe
+	all_words_df = all_words_df.drop_duplicates(subset=['word'], keep='first', inplace=False)
     
-    # display dataframe information
-    write_info(all_words_df)
-    
-    #write to database
-    try:
-        all_words_df.to_sql("all_words", engine, if_exists='replace', index=False)
-    except Exception as e:
-        print_error(e,"get_all_words")
-        sys.exit((1))
+	# display dataframe information
+	write_info(all_words_df)
+	#write to database
+	try:
+		all_words_df.to_csv("words.csv",index=False)
+	except Exception as e:
+		print_error(e,"get_all_words")
+		sys.exit((1))
 
 main()        
