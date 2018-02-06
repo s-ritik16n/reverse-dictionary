@@ -1,3 +1,6 @@
+"""
+extracting definitions from wordnet in nltk and saving to wordnetdb database
+"""
 import pandas as pd
 from nltk.corpus import wordnet as wn
 from connect_db import get_engine
