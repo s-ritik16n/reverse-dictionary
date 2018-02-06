@@ -1,3 +1,7 @@
+"""
+extracting hypernyms from wordnet in nltk and saving to wordnetdb database
+"""
+
 import pandas as pd
 from connect_db import get_engine
 from nltk.corpus import wordnet as wn
