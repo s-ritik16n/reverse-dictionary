@@ -1,3 +1,7 @@
+"""
+display detailed info about errors occuring in a function
+"""
+
 def print_error(err, function, error_type=None):
     print("*"*20)
     print("Error in function: ", function)
