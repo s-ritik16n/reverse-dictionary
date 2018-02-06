@@ -1,4 +1,6 @@
-# extract all words and save to database
+"""
+extract all words from wordnetdb and save to words.csv
+"""
 
 import pandas as pd
 from connect_db import get_engine
