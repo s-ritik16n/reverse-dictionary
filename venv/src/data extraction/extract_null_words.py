@@ -3,27 +3,24 @@ extract words whose definition is not present in defiitions.csv
 """
 
 import pandas as pd
+import numpy as np
 
-df = pd.read_csv("db/definitions.csv", names=["word","definition"], sep=":")
-words = pd.DataFrame(columns = ["word","definition"], index=None)
-
-def extract_null_words(word):
-	if df.loc[df["word"] == word]["definition"] is None:
-		words.append({"word":word}, ignore_index=True)
-
-#df["word"].apply(extract_null_words)
-words = pd.isnull(df["definition"])
+df = pd.read_csv("db/definitions.csv", names=["word","definition"], sep=":", index_col=None)
+words = pd.DataFrame(columns=["word"], index=None)
 
 indices = []
-for i in range(len(words)):
-	if words[i] == True:
-		print(i)
-		indices.append(i)
+def null(word):
+	if str(word) == 'nan':
+		indices.append(word)
 
-#print(df.info())
-#print(len(indices))
+ww = pd.isnull(df['word'])
+for id,w in enumerate(ww):
+	if w is True:
+		print(df.loc[id][0], df.loc[id][1])
 
-new_df = df[df["word"] is None]
-print(new_df.info())
-new_df1 = df[df["definition"] is None]
-print(new_df1.info())
+print("*"*10)
+
+dd = pd.isnull(df['definition'])
+for id,d in enumerate(dd):
+	if d is True:
+		print(df.loc[id][0], df.loc[id][1])
