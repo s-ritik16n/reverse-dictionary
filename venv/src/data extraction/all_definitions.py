@@ -1,5 +1,5 @@
 """
-add definitons of not existing words
+fetch definitons of words whose definitions do not exist in definitons.csv
 """
 
 import pandas as pd
