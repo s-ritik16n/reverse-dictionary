@@ -1,4 +1,7 @@
-#!/usr/bin/env python3
+"""
+get_engine function - access databases through pandas
+connect_db function - connect to database using mysqldb
+"""
 
 import importlib.util as util
 import MySQLdb as mysqldb
