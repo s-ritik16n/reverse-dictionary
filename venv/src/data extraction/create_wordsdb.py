@@ -1,3 +1,7 @@
+"""
+extracting words from wordnet in nltk and saving to wordnetdb database
+"""
+
 import pandas as pd
 from sqlalchemy import TEXT
 from nltk.corpus import words
