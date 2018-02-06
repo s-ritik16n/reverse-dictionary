@@ -1,3 +1,7 @@
+"""
+add definitons of not existing words
+"""
+
 import pandas as pd
 import requests as req
 from connect_db import get_engine
