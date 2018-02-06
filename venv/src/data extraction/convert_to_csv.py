@@ -1,3 +1,7 @@
+"""
+get data from definitions table in wordnetdb and write to csv
+"""
+
 import pandas as pd
 from connect_db import get_engine
 from print_error import print_error
