@@ -1,3 +1,7 @@
+"""
+extracting antonyms from from wordnet utility in nltk and saving to database
+"""
+
 import pandas as pd
 from connect_db import get_engine
 from nltk.corpus import wordnet as wn
