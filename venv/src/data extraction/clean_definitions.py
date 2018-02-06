@@ -1,3 +1,7 @@
+"""
+remove stopwords and other trivial content from definitions.csv
+"""
+
 import pandas as pd
 from connect_db import get_engine
 from print_error import print_error
