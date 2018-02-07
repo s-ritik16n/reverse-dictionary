@@ -29,11 +29,5 @@ def main():
 	print("*"*5)
 	print(df.count())
 	df.to_csv("db/definitions.csv", sep=":", columns=["word","definitions"], mode="w")
-	#df['definition'] = df['definition'].apply(remove_stopwords)
-	#print("*"*5)
-	#print(df.info())
-	#df.to_csv("db/definitions.csv", sep = ":", names=["word","definition"], mode="w")
-	#df['definition'].apply(more_words)
-	#words.to_csv("db/remaining_words.csv", names = ["word"], mode="w")
 
 main()
