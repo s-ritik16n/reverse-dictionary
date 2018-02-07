@@ -18,14 +18,12 @@ null_word_indices = []
 for id,w in enumerate(ww):
 	if w is True:
 		null_word_indices.append(id)
-		# print(df.loc[id][0], df.loc[id][1])
 
 dd = pd.isnull(df['definition'])
 null_def_indices = []
 for id,d in enumerate(dd):
 	if d is True:
 		null_def_indices.append(id)
-		# print(df.loc[id][0], df.loc[id][1])
 
 for el in null_word_indices:
 	if el in null_def_indices:
@@ -33,11 +31,11 @@ for el in null_word_indices:
 
 print("df info before deletion")
 print(df.info())
-print("*"*10)
 
 df = df.drop(null_word_indices, inplace=False)
 df = df.drop(null_def_indices, inplace=False)
 df = df.reset_index(drop=True)
+print("*"*10)
 print(df.info())
 
 df.to_csv("db/definitions.csv", sep=":", columns=["word","definition"], header=False, index=False, mode="w")
