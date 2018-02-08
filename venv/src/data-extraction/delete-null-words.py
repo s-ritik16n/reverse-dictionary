@@ -8,11 +8,6 @@ import numpy as np
 df = pd.read_csv("db/definitions.csv", names=["word","definition"], sep=":", index_col=None, keep_default_na=False, na_values=[""])
 words = pd.DataFrame(columns=["word"], index=None)
 
-indices = []
-def null(word):
-	if str(word) == 'nan':
-		indices.append(word)
-
 ww = pd.isnull(df['word'])
 null_word_indices = []
 for id,w in enumerate(ww):
@@ -33,7 +28,7 @@ print("df info before deletion")
 print(df.info())
 
 df = df.drop(null_word_indices, inplace=False)
-#df = df.drop(null_def_indices, inplace=False)
+df = df.drop(null_def_indices, inplace=False)
 df = df.reset_index(drop=True)
 
 print("*"*10)
