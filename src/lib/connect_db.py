@@ -3,10 +3,9 @@ get_engine function - access databases through pandas
 connect_db function - connect to database using mysqldb
 """
 
-import importlib.util as util
 import MySQLdb as mysqldb
 import os, sys
-from print_error import print_error
+from lib.print_error import print_error
 from sqlalchemy import create_engine, MetaData
 
 def connect_db(user, passwd, db):
