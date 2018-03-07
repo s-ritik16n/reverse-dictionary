@@ -9,6 +9,7 @@ environment-kernels==1.1
 et-xmlfile==1.0.1
 html5lib==1.0.1
 idna==2.6
+-e git+https://github.com/pwdyson/inflect.py@1c5bc7a9e7655492dbb394ccf9ce41b9fa580bf8#egg=inflect
 ipykernel==4.8.0
 ipython==6.2.1
 ipython-genutils==0.2.0
