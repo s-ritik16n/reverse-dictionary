@@ -1,12 +1,13 @@
-# implementing nn using numpy
 import numpy as np
 
-# input array
-X = np.array([[1,0,1,0],[1,0,1,1],[0,1,0,1]])
+defs = {"swag": ["very", "confident","attitude", "manner"], "savage":["fierce", "violent", "uncontrol"], "leverage":["exert", "of", "force", "means", "lever"]}
 
-# Output
-y = np.array([[1],[1],[0]])
+word_list = ["swag", "very", "confident", "attitude", "manner", "savage", "fierce", "violent", "uncontrol", "leverage", "exert", "of", "force", "means", "lever"]
 
+names = ["swag", "savage", "leverage"]
+size = len(word_list)
+X = []
+y = []
 # sigmoid
 def sigmoid(x):
     return 1/(1+np.exp(-x))
@@ -16,19 +17,32 @@ def der_sigmoid(x):
     return 1*(1-x)
 
 # variable initialization
-epoch=5000
+epoch=9000
 lr=0.1
-input_layer_neurons = X.shape[1] # number of features in data set
-hiddenlayer_neurons = 3 # number of hidden layer neurons
-output_neurons = 1
 
-# weight and bias initialization
+for n in names:
+    word = defs[n]
+    out = np.zeros((size,), dtype=int)
+    inp = np.zeros((size,), dtype=int)
+    for key, w in enumerate(word_list):
+        if w is n:
+            out[key] = 1
+        if w in word:
+            inp[key] = 1
+    X.append(inp)
+    y.append(out)
+
+X = np.asarray(X)
+y = np.asarray(y)
+
+input_layer_neurons = X.shape[1] # 3
+hiddenlayer_neurons = 3
+output_neurons = size
+
 wh = np.random.uniform(size = (input_layer_neurons, hiddenlayer_neurons))
-bh = np.random.uniform(size = (1,hiddenlayer_neurons))
+bh = np.random.uniform(size = (1, hiddenlayer_neurons))
 wout = np.random.uniform(size = (hiddenlayer_neurons, output_neurons))
 bout = np.random.uniform(size = (1, output_neurons))
-
-print(wh.shape)
 
 for i in range(epoch):
     # Forward propagation
