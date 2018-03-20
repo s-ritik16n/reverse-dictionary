@@ -6506,10 +6506,10 @@ commonli:normal condit
 honestli:sincer case that 
 frankli:sincer case that 
 fluster:thrown state agit confus 
-hotbothered(p):thrown state agit confus 
+hotbothered:thrown state agit confus 
 rattl:thrown state agit confus 
 fluster:thrown state agit confus 
-hotbothered(p):thrown state agit confus 
+hotbothered:thrown state agit confus 
 perturb:thrown state agit confus 
 conduct:transmiss heat electr sound 
 allow:possibl allow 
@@ -9630,8 +9630,8 @@ overwhelm:
 overpow:
 distinctli:
 than:
-(or:
-body):
+or:
+body:
 just:
 obligatori:
 paralysi:
@@ -9647,9 +9647,8 @@ spinal:
 beforehand:
 n:
 piti:
-speaker':
+speaker:
 dictat:
 bowel:
-(of:
-depth):
+of:
 cartilag:
