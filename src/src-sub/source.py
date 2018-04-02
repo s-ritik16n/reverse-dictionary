@@ -7,6 +7,7 @@ from keras.models import Sequential
 from keras.preprocessing.text import Tokenizer
 import os
 import tensorflow as tf
+import operator
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 size = 10
@@ -85,4 +86,28 @@ for i in range(epoch):
     wh += X.T.dot(d_hiddenlayer) * lr
     bh += np.sum(d_hiddenlayer, axis=0, keepdims = True) * lr
 
-print(output)
+
+def one_hot(array):
+    temp = []
+    for arr in array:
+        index,value = max(enumerate(arr), key = operator.itemgetter(1))
+        print(index, value)
+        temp.append([index, value])
+    return temp
+
+print("\none_hot for expected outcome - ")
+y_one_hot = one_hot(y)
+print("\none_hot for actual outcome - ")
+output_one_hot = one_hot(output)
+
+print("difference in actual and expected - ")
+
+count = 0
+for key in range(len(y_one_hot)):
+    if y_one_hot[key][0] != output_one_hot[key][0]:
+        print("y = {}".format(str(y_one_hot[key])))
+        print("output = {}".format(str(output_one_hot[key])))
+        count += 1
+
+print("total number of mismatches = {}".format(str(count)))
+print("training data accuracy = {0}{1}".format(str((size-count)*100/size), "%"))
