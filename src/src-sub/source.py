@@ -50,7 +50,7 @@ def sigmoid(x):
 def der_sigmoid(x):
     return 1*(1-x)
 
-epoch=20000
+epoch=200000
 lr=0.1
 
 input_layer_neurons = encoded_docs.shape[1] # 3
