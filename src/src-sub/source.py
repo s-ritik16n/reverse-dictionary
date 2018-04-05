@@ -8,42 +8,50 @@ from keras.preprocessing.text import Tokenizer
 import os
 import tensorflow as tf
 import operator
+import pickle
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-size = 10
-df = pd.read_csv("db/final_final.csv", names=["word","definition"], sep=":", index_col=None, keep_default_na=False, na_values=[""])
-df = df[:size]
-df = df.values.tolist()
-print(df)
-all_docs = []
-words = [arr[0] for arr in df]
-# print(words)
-sents = [arr[1] for arr in df]
-# print(sents)
-all_docs = words + sents
-# print(all_docs)
-t = Tokenizer()
-t.fit_on_texts(all_docs)
-# print(t.word_counts)
-# print(t.document_count)
-print(t.word_index)
-# print(t.word_docs)
-encoded_docs = t.texts_to_matrix(all_docs, mode='count')
-print("\n")
-# print(encoded_docs)
-y = encoded_docs[:size]
-X = encoded_docs[size:]
-print("X = ")
-print(X)
-print("\n")
-print("y = ")
-print(y)
-# model = Sequential()
-# model.add(Dense(3,activation='sigmoid', input_dim=encoded_docs.shape[1]))
-# model.add(Dense(encoded_docs.shape[1], activation='sigmoid'))
-# model.compile(optimizer=keras.optimizers.SGD(lr=0.2), loss='mse')
-# model.summary()
-# model.fit(X, y, epochs=100, verbose=1)
+def config():
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+def initialize(size=10):
+    df = pd.read_csv("db/final_final.csv", names=["word","definition"], sep=":", index_col=None, keep_default_na=False, na_values=[""])
+    df = df[:size]
+    df = df.values.tolist()
+    df = [[f[0], f[1].strip()] for f in df]
+    print(df)
+    return df
+
+
+def build_matrix(df):
+    all_docs = []
+    words = [arr[0] for arr in df]
+    sents = [arr[1] for arr in df]
+    all_docs = words + sents
+    return all_docs
+
+def tokenize(all_docs, size):
+    t = Tokenizer()
+    t.fit_on_texts(all_docs)
+    print(t.word_index)
+    encoded_docs = t.texts_to_matrix(all_docs, mode='count')
+    print("\n")
+    y = encoded_docs[:size]
+    X = encoded_docs[size:]
+    print("X = ")
+    print(X)
+    print("\n")
+    print("y = ")
+    print(y)
+    return (X,y, encoded_docs.shape[1])
+
+def keras_train(X, y, size):
+    model = Sequential()
+    model.add(Dense(3,activation='sigmoid', input_dim=size))
+    model.add(Dense(size, activation='sigmoid'))
+    model.compile(optimizer=keras.optimizers.SGD(lr=0.2), loss='mse', metrics=['accuracy'])
+    model.summary()
+    model.fit(X, y, epochs=100, verbose=1)
+    return
 
 def sigmoid(x):
     return np.around(1/(1+np.exp(-x)), decimals=30)
@@ -51,63 +59,98 @@ def sigmoid(x):
 def der_sigmoid(x):
     return 1*(1-x)
 
-epoch=200000
-lr=0.1
+def softmax(x):
+    ps = np.exp(X * 2.0)
+    ps /= np.sum(ps)
+    return ps
 
-input_layer_neurons = encoded_docs.shape[1] # 3
-hiddenlayer_neurons = 3
-output_neurons = encoded_docs.shape[1]
+def tensor():
+    
+    return
 
-wh = np.random.uniform(size = (input_layer_neurons, hiddenlayer_neurons))
-bh = np.random.uniform(size = (1, hiddenlayer_neurons))
-wout = np.random.uniform(size = (hiddenlayer_neurons, output_neurons))
-bout = np.random.uniform(size = (1, output_neurons))
+def train(X, y, size):
+    epoch=20000
+    lr=0.05
+    # best results at lr = 0.1, size = 10, epochs = 200000
 
-for i in range(epoch):
+    input_layer_neurons = size
+    hiddenlayer_neurons = 3
+    output_neurons = size
 
-    # print("epoch - {}".format(str(i)))
-    # Forward propagation
-    hidden_layer_input1 = np.dot(X,wh)
-    hidden_layer_input = hidden_layer_input1 + bh
-    hidden_layer_activations = sigmoid(hidden_layer_input)
-    output_layer_input1 = np.dot(hidden_layer_activations, wout)
-    output_layer_input = output_layer_input1 + bout
-    output = sigmoid(output_layer_input)
+    wh = np.random.uniform(size = (input_layer_neurons, hiddenlayer_neurons))
+    bh = np.random.uniform(size = (1, hiddenlayer_neurons))
+    wout = np.random.uniform(size = (hiddenlayer_neurons, output_neurons))
+    bout = np.random.uniform(size = (1, output_neurons))
 
-    # Backpropagation
-    E = y-output
-    slope_output_layer = der_sigmoid(output)
-    slope_hidden_layer = der_sigmoid(hidden_layer_activations)
-    d_output = E * slope_output_layer
-    Error_at_hidden_layer = d_output.dot(wout.T)
-    d_hiddenlayer = Error_at_hidden_layer * slope_hidden_layer
-    wout += hidden_layer_activations.T.dot(d_output) * lr
-    bout += np.sum(d_output, axis=0, keepdims = True) * lr
-    wh += X.T.dot(d_hiddenlayer) * lr
-    bh += np.sum(d_hiddenlayer, axis=0, keepdims = True) * lr
+    for i in range(epoch):
+
+        # print("epoch - {}".format(str(i)))
+        # Forward propagation
+        hidden_layer_input1 = np.dot(X,wh)
+        hidden_layer_input = hidden_layer_input1 + bh
+        hidden_layer_activations = sigmoid(hidden_layer_input)
+        output_layer_input1 = np.dot(hidden_layer_activations, wout)
+        output_layer_input = output_layer_input1 + bout
+        output = sigmoid(output_layer_input)
+
+        # Backpropagation
+        E = y-output
+        slope_output_layer = der_sigmoid(output)
+        slope_hidden_layer = der_sigmoid(hidden_layer_activations)
+        d_output = E * slope_output_layer
+        Error_at_hidden_layer = d_output.dot(wout.T)
+        d_hiddenlayer = Error_at_hidden_layer * slope_hidden_layer
+        wout += hidden_layer_activations.T.dot(d_output) * lr
+        bout += np.sum(d_output, axis=0, keepdims = True) * lr
+        wh += X.T.dot(d_hiddenlayer) * lr
+        bh += np.sum(d_hiddenlayer, axis=0, keepdims = True) * lr
+
+    return output
 
 
 def one_hot(array):
     temp = []
-    for arr in array:
-        index,value = max(enumerate(arr), key = operator.itemgetter(1))
-        print(index, value)
-        temp.append([index, value])
-    return temp
+    return np.argmax(array, axis =1)
 
-print("\none_hot for expected outcome - ")
-y_one_hot = one_hot(y)
-print("\none_hot for actual outcome - ")
-output_one_hot = one_hot(output)
+def compute(y,output, size):
+    # print("\none_hot for expected outcome - ")
+    # y_one_hot = one_hot(y)
+    print("\none_hot for actual outcome - ")
+    output_one_hot = one_hot(output)
+    print(output_one_hot)
+    # print("\ndifference in actual and expected - ")
 
-print("difference in actual and expected - ")
+    count = 0
+    for key, val in enumerate(output_one_hot):
+        if y[key][val] != 1:
+            count += 1
 
-count = 0
-for key in range(len(y_one_hot)):
-    if y_one_hot[key][0] != output_one_hot[key][0]:
-        print("y = {}".format(str(y_one_hot[key])))
-        print("output = {}".format(str(output_one_hot[key])))
-        count += 1
+    print("\ntotal number of mismatches = {}".format(str(count)))
+    print("training data accuracy = {0}{1}".format(str((size-count)*100/size), "%"))
 
-print("total number of mismatches = {}".format(str(count)))
-print("training data accuracy = {0}{1}".format(str((size-count)*100/size), "%"))
+def save():
+    with open("wh.pkl","wb") as whp:
+        whp.dumps(wh)
+    with open("bh.pkl","wb") as bhp:
+        whp.dumps(wh)
+    with open("wout.pkl","wb") as whp:
+        whp.dumps(wout)
+    with open("wh.pkl","wb") as whp:
+        whp.dumps(wh)
+    with open("wh.pkl","wb") as whp:
+        whp.dumps(wh)
+    with open("wh.pkl","wb") as whp:
+        whp.dumps(wh)
+    return
+
+def main():
+    config()
+    size = 20
+    df = initialize(size)
+    all_docs = build_matrix(df)
+    X, y, sizeMat = tokenize(all_docs, size)
+    # keras_train(X, y, sizeMat)
+    output = train(X,y, sizeMat)
+    compute(y, output, size)
+
+main()
