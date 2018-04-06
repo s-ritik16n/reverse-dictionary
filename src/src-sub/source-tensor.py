@@ -135,4 +135,5 @@ def main():
     x, y, index, encoded_docs = tokenize(docs, total)
     tensor(x, y, index, encoded_docs)
     return
+
 main()
