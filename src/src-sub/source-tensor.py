@@ -69,6 +69,7 @@ def tensor(x_train, y_train, indexes, encoded_docs):
     # sess.run(sess.graph.get_tensor_by_name('beta2_power/Assign:0'))
     n_iters = 10000
 
+
     for _ in range(n_iters):
         print(_)
         sess.run(train_step, feed_dict = {x: x_train, y_label: y_train})
