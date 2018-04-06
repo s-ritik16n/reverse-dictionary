@@ -48,7 +48,7 @@ def keras_train(X, y, size):
     model = Sequential()
     model.add(Dense(3,activation='sigmoid', input_dim=size))
     model.add(Dense(size, activation='sigmoid'))
-    model.compile(optimizer=keras.optimizers.SGD(lr=0.2), loss='mse', metrics=['accuracy'])
+    model.compile(optimizer=keras.optimizers.SGD(lr=0.1), loss='mse', metrics=['accuracy'])
     model.summary()
     model.fit(X, y, epochs=100, verbose=1)
     return
@@ -64,8 +64,15 @@ def softmax(x):
     ps /= np.sum(ps)
     return ps
 
-def tensor():
-    
+def tensor(size):
+    X = tf.placeholder(tf.float32, shape=(None, size))
+    y_label = tf.placeholder(tf.float32, shape=(None, ))
+    sess = tf.Session()
+    init = tf.global_variables_initializer()
+    sess.run(init)
+
+    # define loss function
+    cross_entropy_loss = tf.reduce(-tf.reduce_sum(y))
     return
 
 def train(X, y, size):
