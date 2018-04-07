@@ -129,7 +129,7 @@ def compute(y,output, size):
     print("training data accuracy = {0}{1}".format(str((size-count)*100/size), "%"))
 
 def main():
-    total = 100
+    total = 1000
     df = initialize(total)
     docs = build_matrix(df)
     x, y, index, encoded_docs = tokenize(docs, total)
