@@ -64,11 +64,11 @@ def tensor(x_train, y_train, indexes, encoded_docs):
     #train_step = train_step.minimize(cross_entropy_loss)
 
     # train_step = tf.train.AdamOptimizer(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8, use_locking=False,name='Adam')
-    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
+    train_step = tf.train.GradientDescentOptimizer(0.05).minimize(cross_entropy_loss)
     sess.run(init)
     # sess.run(sess.graph.get_tensor_by_name('beta1_power/Assign:0'))
     # sess.run(sess.graph.get_tensor_by_name('beta2_power/Assign:0'))
-    n_iters = 10000
+    n_iters = 20000
 
 
     for _ in range(n_iters):
