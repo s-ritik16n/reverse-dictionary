@@ -45,7 +45,7 @@ def tensor(x_train, y_train, indexes, encoded_docs):
     x = tf.placeholder(tf.float32, shape=(size, columns))
     y_label = tf.placeholder(tf.float32, shape=(size, columns))
 
-    EMBEDDING_DIM = 5
+    EMBEDDING_DIM = 3 
     W1 = tf.Variable(tf.random_normal([columns, EMBEDDING_DIM]))
     b1 = tf.Variable(tf.random_normal([EMBEDDING_DIM]))
     hidden_repr = tf.add(tf.matmul(x, W1), b1)
@@ -59,11 +59,12 @@ def tensor(x_train, y_train, indexes, encoded_docs):
     init = tf.global_variables_initializer()
 
 
-    cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction+1e-8), reduction_indices=[1]))
-    # train_step = tf.train.AdamOptimizer(0.1)
-    # train_step = train_step.minimize(cross_entropy_loss)
+    cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction+1e-20), reduction_indices=[1]))
+    #train_step = tf.train.AdamOptimizer(0.1)
+    #train_step = train_step.minimize(cross_entropy_loss)
 
-    train_step = tf.train.GradientDescentOptimizer(0.3).minimize(cross_entropy_loss)
+    # train_step = tf.train.AdamOptimizer(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8, use_locking=False,name='Adam')
+    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
     sess.run(init)
     # sess.run(sess.graph.get_tensor_by_name('beta1_power/Assign:0'))
     # sess.run(sess.graph.get_tensor_by_name('beta2_power/Assign:0'))
@@ -129,7 +130,7 @@ def compute(y,output, size):
     print("training data accuracy = {0}{1}".format(str((size-count)*100/size), "%"))
 
 def main():
-    total = 500
+    total = 100
     df = initialize(total)
     docs = build_matrix(df)
     x, y, index, encoded_docs = tokenize(docs, total)
