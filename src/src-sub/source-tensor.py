@@ -45,7 +45,7 @@ def tensor(x_train, y_train, indexes, encoded_docs):
     x = tf.placeholder(tf.float32, shape=(size, columns))
     y_label = tf.placeholder(tf.float32, shape=(size, columns))
 
-    EMBEDDING_DIM = 3
+    EMBEDDING_DIM = 5
     W1 = tf.Variable(tf.random_normal([columns, EMBEDDING_DIM]))
     b1 = tf.Variable(tf.random_normal([EMBEDDING_DIM]))
     hidden_repr = tf.add(tf.matmul(x, W1), b1)
@@ -63,11 +63,11 @@ def tensor(x_train, y_train, indexes, encoded_docs):
     # train_step = tf.train.AdamOptimizer(0.1)
     # train_step = train_step.minimize(cross_entropy_loss)
 
-    train_step = tf.train.GradientDescentOptimizer(0.05).minimize(cross_entropy_loss)
+    train_step = tf.train.GradientDescentOptimizer(0.3).minimize(cross_entropy_loss)
     sess.run(init)
     # sess.run(sess.graph.get_tensor_by_name('beta1_power/Assign:0'))
     # sess.run(sess.graph.get_tensor_by_name('beta2_power/Assign:0'))
-    n_iters = 100000
+    n_iters = 10000
 
 
     for _ in range(n_iters):
@@ -129,7 +129,7 @@ def compute(y,output, size):
     print("training data accuracy = {0}{1}".format(str((size-count)*100/size), "%"))
 
 def main():
-    total = 1000
+    total = 500
     df = initialize(total)
     docs = build_matrix(df)
     x, y, index, encoded_docs = tokenize(docs, total)
