@@ -59,16 +59,16 @@ def tensor(x_train, y_train, indexes, encoded_docs):
     init = tf.global_variables_initializer()
 
 
-    cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction+1e-20), reduction_indices=[1]))
+    cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction+1e-10), reduction_indices=[1]))
     #train_step = tf.train.AdamOptimizer(0.1)
     #train_step = train_step.minimize(cross_entropy_loss)
 
     # train_step = tf.train.AdamOptimizer(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8, use_locking=False,name='Adam')
-    train_step = tf.train.GradientDescentOptimizer(0.05).minimize(cross_entropy_loss)
+    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
     sess.run(init)
     # sess.run(sess.graph.get_tensor_by_name('beta1_power/Assign:0'))
     # sess.run(sess.graph.get_tensor_by_name('beta2_power/Assign:0'))
-    n_iters = 20000
+    n_iters = 200000
 
 
     for _ in range(n_iters):
@@ -130,7 +130,7 @@ def compute(y,output, size):
     print("training data accuracy = {0}{1}".format(str((size-count)*100/size), "%"))
 
 def main():
-    total = 100
+    total = 500
     df = initialize(total)
     docs = build_matrix(df)
     x, y, index, encoded_docs = tokenize(docs, total)
