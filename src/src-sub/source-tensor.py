@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from keras.preprocessing.text import Tokenizer
 
+store = {}
+
 def initialize(size=10):
     df = pd.read_csv("db/final_final_final.csv", names=["word","definition"], sep=":", index_col=None, keep_default_na=False, na_values=[""])
     df = df[:size]
@@ -109,6 +111,14 @@ def tensor(x_train, y_train, indexes, encoded_docs):
                 mismatches_words.append((val_y, val_vect))
             print("\n")
         print("total number of mismatches = ", str(mismatches))
+        store["w1"] = W1
+        store["w2"] = W2
+        store["b1"] = b1
+        store["b2"] = b2
+        store["x_train"] = x_train
+        store["y_train"] = y_train
+        store["mismatches"] = mismatches
+        store["mismatches_words"] = mismatches_words
         # print(mismatches_words)
     return
 
@@ -126,12 +136,25 @@ def compute(y,output, size):
     print("\ntotal number of mismatches = {}".format(str(count)))
     print("training data accuracy = {0}{1}".format(str((size-count)*100/size), "%"))
 
+def write_pkl(store):
+    with open("store.pkl","wb") as pkl_w:
+        pkl_obj.dumps(store)
+
+def read_pkl(store):
+    with open("store.pkl", "rb") as pkl_r:
+        store_data = pkl_r.loads(store)
+        print(store_data)
+    return
+    
 def main():
     total = 500
+    store["total"] = 500
     df = initialize(total)
     docs = build_matrix(df)
     x, y, index, encoded_docs = tokenize(docs, total)
     tensor(x, y, index, encoded_docs)
+    write_pkl(store)
+    read_pkl(store)
     return
 
 main()
