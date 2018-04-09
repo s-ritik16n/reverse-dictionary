@@ -60,14 +60,13 @@ def tensor(x_train, y_train, indexes, encoded_docs):
         # sess = tf.Session()
         init = tf.global_variables_initializer()
 
+        sess.run(init)
 
         cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction+1e-10), reduction_indices=[1]))
 
         train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
-        sess.run(init)
-        # optimizer = tf.train.AdamOptimizer(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8, use_locking=False,name='Adam').minimize(cross_entropy_loss)
-        # sess.run(sess.graph.get_tensor_by_name('beta1_power/Assign:0'))
-        # sess.run(sess.graph.get_tensor_by_name('beta2_power/Assign:0'))
+        # train_step = tf.train.AdagradOptimizer(0.1).minimize(cross_entropy_loss)
+
         n_iters = 200000
 
 
@@ -100,17 +99,17 @@ def tensor(x_train, y_train, indexes, encoded_docs):
             for key, val in indexes.items():
                 if val == one_hot_y:
                     val_y = key
-                    print("y=", key)
+                    print("y = ", key)
                 if val == one_hot_vect:
                     val_vect = key
-                    print("vector=", key)
+                    print("vector =", key)
 
             if val_y != val_vect:
                 mismatches += 1
                 mismatches_words.append((val_y, val_vect))
             print("\n")
         print("total number of mismatches = ", str(mismatches))
-        print(mismatches_words)
+        # print(mismatches_words)
     return
 
 def compute(y,output, size):
