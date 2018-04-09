@@ -45,7 +45,7 @@ def tensor(x_train, y_train, indexes, encoded_docs):
     x = tf.placeholder(tf.float32, shape=(size, columns))
     y_label = tf.placeholder(tf.float32, shape=(size, columns))
 
-    EMBEDDING_DIM = 3 
+    EMBEDDING_DIM = 3
     W1 = tf.Variable(tf.random_normal([columns, EMBEDDING_DIM]))
     b1 = tf.Variable(tf.random_normal([EMBEDDING_DIM]))
     hidden_repr = tf.add(tf.matmul(x, W1), b1)
@@ -55,64 +55,62 @@ def tensor(x_train, y_train, indexes, encoded_docs):
 
     prediction = tf.nn.softmax(tf.add(tf.matmul(hidden_repr, W2), b2))
 
-    sess = tf.Session()
-    init = tf.global_variables_initializer()
+    with tf.Session() as sess:
+
+        # sess = tf.Session()
+        init = tf.global_variables_initializer()
 
 
-    cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction+1e-10), reduction_indices=[1]))
-    #train_step = tf.train.AdamOptimizer(0.1)
-    #train_step = train_step.minimize(cross_entropy_loss)
+        cross_entropy_loss = tf.reduce_mean(-tf.reduce_sum(y_label * tf.log(prediction+1e-10), reduction_indices=[1]))
 
-    # train_step = tf.train.AdamOptimizer(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8, use_locking=False,name='Adam')
-    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
-    sess.run(init)
-    # sess.run(sess.graph.get_tensor_by_name('beta1_power/Assign:0'))
-    # sess.run(sess.graph.get_tensor_by_name('beta2_power/Assign:0'))
-    n_iters = 200000
+        train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
+        sess.run(init)
+        # optimizer = tf.train.AdamOptimizer(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8, use_locking=False,name='Adam').minimize(cross_entropy_loss)
+        # sess.run(sess.graph.get_tensor_by_name('beta1_power/Assign:0'))
+        # sess.run(sess.graph.get_tensor_by_name('beta2_power/Assign:0'))
+        n_iters = 200000
 
 
-    for _ in range(n_iters):
-        print(_)
-        sess.run(train_step, feed_dict = {x: x_train, y_label: y_train})
-        loss = sess.run(cross_entropy_loss, feed_dict = {x: x_train, y_label: y_train})
-        if loss == np.nan:
-            break
-        print('loss is: ', loss)
+        for _ in range(n_iters):
+            print(_)
+            sess.run(train_step, feed_dict = {x: x_train, y_label: y_train})
+            loss = sess.run(cross_entropy_loss, feed_dict = {x: x_train, y_label: y_train})
+            print('loss is: ', loss)
 
-    # vectors = sess.run(W1+b1)
-    W1 = tf.cast(W1, tf.float64)
-    mismatches = 0
-    mismatches_words = []
-    print(indexes)
-    for i in range(len(y_train)):
-        vec1 = tf.matmul(np.asarray([x_train[i]]), W1)
-        # tf.cast(vec1, tf.float32)
-        vec1 = tf.cast(vec1, tf.float32)
-        vec2 = tf.add(vec1,b1)
+        # vectors = sess.run(W1+b1)
+        W1 = tf.cast(W1, tf.float64)
+        mismatches = 0
+        mismatches_words = []
+        print(indexes)
+        for i in range(len(y_train)):
+            vec1 = tf.matmul(np.asarray([x_train[i]]), W1)
+            # tf.cast(vec1, tf.float32)
+            vec1 = tf.cast(vec1, tf.float32)
+            vec2 = tf.add(vec1,b1)
 
-        vect = tf.add(tf.matmul(vec2,W2), b2)
-        vect = sess.run(vect)
+            vect = tf.add(tf.matmul(vec2,W2), b2)
+            vect = sess.run(vect)
 
-        print(y_train[i])
-        print(vect[0])
-        one_hot_y = one_hot(y_train[i])
-        one_hot_vect = one_hot(vect[0])
-        print(one_hot_y)
-        print(one_hot_vect)
-        for key, val in indexes.items():
-            if val == one_hot_y:
-                val_y = key
-                print("y=", key)
-            if val == one_hot_vect:
-                val_vect = key
-                print("vector=", key)
+            print(y_train[i])
+            print(vect[0])
+            one_hot_y = one_hot(y_train[i])
+            one_hot_vect = one_hot(vect[0])
+            print(one_hot_y)
+            print(one_hot_vect)
+            for key, val in indexes.items():
+                if val == one_hot_y:
+                    val_y = key
+                    print("y=", key)
+                if val == one_hot_vect:
+                    val_vect = key
+                    print("vector=", key)
 
-        if val_y != val_vect:
-            mismatches += 1
-            mismatches_words.append((val_y, val_vect))
-        print("\n")
-    print("total number of mismatches = ", str(mismatches))
-    print(mismatches_words)
+            if val_y != val_vect:
+                mismatches += 1
+                mismatches_words.append((val_y, val_vect))
+            print("\n")
+        print("total number of mismatches = ", str(mismatches))
+        print(mismatches_words)
     return
 
 def compute(y,output, size):
