@@ -76,6 +76,7 @@ def tensor(x_train, y_train, indexes, encoded_docs):
             sess.run(train_step, feed_dict = {x: x_train, y_label: y_train})
             loss = sess.run(cross_entropy_loss, feed_dict = {x: x_train, y_label: y_train})
             print('loss is: ', loss)
+            store["loss"] = loss
 
         # vectors = sess.run(W1+b1)
         W1 = tf.cast(W1, tf.float64)
@@ -152,7 +153,7 @@ def main():
     x, y, index, encoded_docs = tokenize(docs, total)
     tensor(x, y, index, encoded_docs)
     write_pkl(store)
-    # read_pkl(store)
+    read_pkl(store)
     return
 
 main()
