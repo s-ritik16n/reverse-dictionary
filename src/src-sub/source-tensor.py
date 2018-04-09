@@ -3,6 +3,7 @@ import keras
 import numpy as np
 import pandas as pd
 from keras.preprocessing.text import Tokenizer
+import pickle
 
 store = {}
 
@@ -36,9 +37,10 @@ def one_hot(array):
 def tensor(x_train, y_train, indexes, encoded_docs):
     x_train = np.asarray(x_train)
     y_train = np.asarray(y_train)
-    print(x_train.shape)
-    print(y_train.shape)
-    print(encoded_docs)
+    # print(x_train.shape)
+    # print(y_train.shape)
+    print(x_train)
+    # print(encoded_docs)
     size = x_train.shape[0]
     input_layer_neurons = size
     columns = x_train.shape[1]
@@ -69,20 +71,20 @@ def tensor(x_train, y_train, indexes, encoded_docs):
         train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
         # train_step = tf.train.AdagradOptimizer(0.1).minimize(cross_entropy_loss)
 
-        n_iters = 200000
+        n_iters = 100
 
 
         for _ in range(n_iters):
-            print(_)
+            # print(_)
             sess.run(train_step, feed_dict = {x: x_train, y_label: y_train})
             loss = sess.run(cross_entropy_loss, feed_dict = {x: x_train, y_label: y_train})
-            print('loss is: ', loss)
+            # print('loss is: ', loss)
 
         # vectors = sess.run(W1+b1)
         W1 = tf.cast(W1, tf.float64)
         mismatches = 0
         mismatches_words = []
-        print(indexes)
+        # print(indexes)
         for i in range(len(y_train)):
             vec1 = tf.matmul(np.asarray([x_train[i]]), W1)
             # tf.cast(vec1, tf.float32)
@@ -92,29 +94,29 @@ def tensor(x_train, y_train, indexes, encoded_docs):
             vect = tf.add(tf.matmul(vec2,W2), b2)
             vect = sess.run(vect)
 
-            print(y_train[i])
-            print(vect[0])
+            # print(y_train[i])
+            # print(vect[0])
             one_hot_y = one_hot(y_train[i])
             one_hot_vect = one_hot(vect[0])
-            print(one_hot_y)
-            print(one_hot_vect)
+            # print(one_hot_y)
+            # print(one_hot_vect)
             for key, val in indexes.items():
                 if val == one_hot_y:
                     val_y = key
-                    print("y = ", key)
+                    # print("y = ", key)
                 if val == one_hot_vect:
                     val_vect = key
-                    print("vector =", key)
+                    # print("vector =", key)
 
             if val_y != val_vect:
                 mismatches += 1
                 mismatches_words.append((val_y, val_vect))
-            print("\n")
+            # print("\n")
         print("total number of mismatches = ", str(mismatches))
-        store["w1"] = W1
-        store["w2"] = W2
-        store["b1"] = b1
-        store["b2"] = b2
+        store["w1"] = sess.run(W1)
+        store["w2"] = sess.run(W2)
+        store["b1"] = sess.run(b1)
+        store["b2"] = sess.run(b2)
         store["x_train"] = x_train
         store["y_train"] = y_train
         store["mismatches"] = mismatches
@@ -124,9 +126,9 @@ def tensor(x_train, y_train, indexes, encoded_docs):
 
 def compute(y,output, size):
 
-    print("\none_hot for actual outcome - ")
+    # print("\none_hot for actual outcome - ")
     output_one_hot = one_hot(output)
-    print(output_one_hot)
+    # print(output_one_hot)
 
     count = 0
     for key, val in enumerate(output_one_hot):
@@ -137,18 +139,19 @@ def compute(y,output, size):
     print("training data accuracy = {0}{1}".format(str((size-count)*100/size), "%"))
 
 def write_pkl(store):
-    with open("store.pkl","wb") as pkl_w:
-        pkl_obj.dumps(store)
+    with open("store.pickle","wb") as pkl_w:
+        pickle.dump(store, pkl_w)
+    return
 
 def read_pkl(store):
-    with open("store.pkl", "rb") as pkl_r:
-        store_data = pkl_r.loads(store)
+    with open("store.pickle", "rb") as pkl_r:
+        store_data = pickle.load(pkl_r)
         print(store_data)
     return
-    
+
 def main():
-    total = 500
-    store["total"] = 500
+    total = 10
+    store["total"] = total
     df = initialize(total)
     docs = build_matrix(df)
     x, y, index, encoded_docs = tokenize(docs, total)
