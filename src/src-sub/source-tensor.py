@@ -68,7 +68,7 @@ def tensor(x_train, y_train, indexes, encoded_docs):
 
         train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy_loss)
 
-        n_iters = 300000
+        n_iters = 200000
 
 
         for _ in range(n_iters):
