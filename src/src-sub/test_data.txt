@@ -1,10 +1,9 @@
-adduc:bring togeth draw toward midlin bodi toward adjac part
-moribund:breath last
-direct:lack compromis mitig element
-rel:estim comparison
-abstin:indulg appetit especi food drink
-hoggish:coars glutton greedi
-abstract:separ embodi
-concret:abstract imaginari
+abstin:indulg appetit especi food
+direct:compromis mitig element
+alkalin:relat contain
+outback:inaccess popul
+hoggish:glutton greedi
+inact:lie unus
+effect:fact
 unabus:physic abus
 unexception:complet accept

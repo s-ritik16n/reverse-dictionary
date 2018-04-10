@@ -78,6 +78,10 @@ def one_hot(array):
     temp = []
     return np.argmax(array)
 
+def top_ten(array):
+
+    return
+
 def test(x_test, y_test, index):
     store = read_pkl()
     with tf.Session() as sess:
@@ -104,10 +108,16 @@ def test(x_test, y_test, index):
             for key, val in index.items():
                 if val == one_hot_y:
                     val_y = key
-                    print("y = ", key)
                 if val == one_hot_vect:
                     val_vect = key
-                    print("vector =", key)
+
+            if val_y == val_vect:
+                print("match")
+            else:
+                print("mismatch")
+            print("y =", val_y)
+            print("vector =", val_vect)
+            print("\n")
     return
 
 def main():
