@@ -1,5 +1,0 @@
-venv/src/data-extraction/config.py
-venv/src/data-extraction/try.py
-venv/src/trial_junk/
-venv/src/data-extraction/__pycache__/*
-src/pkl-db/*
